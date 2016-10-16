@@ -44,3 +44,7 @@ bot.connect(host, port, channel)
 example: ```bot.connect('www.yourdomain.com', 6667, 'friends_and_family')```
 
 Connects to an IRC server at the designated host/port - and in this case enters the "friends_and_family" channel.  After the bot enters the channel it will send the message defined in the constructor.
+
+#### Quit
+
+By default any bot using this framework will exit the channel (and the program) if it receives the command "quit" (in this case "@test quit").
