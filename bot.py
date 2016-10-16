@@ -15,24 +15,25 @@ class Bot():
     def add_complex_listener(self, term, action):
         self.complex_listeners[term] = action
 
+    def send_message(self, channel, message):
+        full_message = 'PRIVMSG #' + channel + ' :' + message.rstrip() + '\r\n'
+        self.irc.send(full_message.encode())
+
     def connect(self, network, port, channel):
-        irc = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
-        irc.connect ( ( network, port ) )
+        self.irc = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
+        self.irc.connect ( ( network, port ) )
 
         nick_command = 'NICK ' + self.name + '\r\n'
         user_command = 'USER ' + self.name + ' ' + self.name + ' ' + self.name + ' :Python IRC\r\n'
         join_command = 'JOIN #' + channel + '\r\n'
-        priv_command = 'PRIVMSG #' + channel + ' :' + self.welcome_message + '\r\n'
-        irc.send(nick_command.encode())
-        irc.send(user_command.encode())
-        irc.send(join_command.encode())
-        irc.send(priv_command.encode())
-
-        message_base = 'PRIVMSG #' + channel + ' :'
+        self.irc.send(nick_command.encode())
+        self.irc.send(user_command.encode())
+        self.irc.send(join_command.encode())
+        self.send_message(channel, self.welcome_message)
 
         keep_running = True
         while keep_running:
-            byte_data = irc.recv ( 1024 )
+            byte_data = self.irc.recv ( 1024 )
             data = byte_data.decode().rstrip()
             name_index = data.find('@' + self.name)
 
@@ -63,12 +64,10 @@ class Bot():
                         messages = self.complex_listeners[bot_command](arguments)
                         if messages is not None:
                             for m in messages:
-                                single_line = message_base + m + '\r\n'
-                                irc.send(single_line.encode())
+                                self.send_message(channel, m)
                     else:
                         message = 'Command ' + bot_command + ' not found for ' + self.name
 
                 # Send the message no matter what has been created
                 if message is not None:
-                    message = message_base + message.rstrip() + '\r\n'
-                    irc.send(message.encode())
+                    self.send_message(channel, message)
