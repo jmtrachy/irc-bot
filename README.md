@@ -1,6 +1,8 @@
 ## irc-bot
 Gives developers the ability to quickly create an IRC bot.  A friend and I have created several bots recently for irc and every time I find myself building boiler plate code.
 
+This code only works in python3 because of how 2 and 3 handle strings/bytes differently.
+
 #### Initializing the bot
 
 example.py is an example implementation.  Simply create a bot, add some listeners and get on your way.
