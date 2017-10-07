@@ -19,13 +19,15 @@ class Bot():
         full_message = 'PRIVMSG #' + channel + ' :' + message.rstrip() + '\r\n'
         self.irc.send(full_message.encode())
 
-    def connect(self, network, port, channel):
+    def connect(self, network, port, channel, password):
         self.irc = socket.socket ( socket.AF_INET, socket.SOCK_STREAM )
         self.irc.connect ( ( network, port ) )
 
-        nick_command = 'NICK ' + self.name + '\r\n'
-        user_command = 'USER ' + self.name + ' ' + self.name + ' ' + self.name + ' :Python IRC\r\n'
-        join_command = 'JOIN #' + channel + '\r\n'
+        if password is not None:
+           self.irc.send(('PASS {}\n'.format(password)).encode())
+        nick_command = 'NICK {}\r\n'.format(self.name)
+        user_command = 'USER {} {} {} :Python IRC\r\n'.format(self.name, self.name, self.name)
+        join_command = 'JOIN #{}\r\n'.format(channel)
         self.irc.send(nick_command.encode())
         self.irc.send(user_command.encode())
         self.irc.send(join_command.encode())
